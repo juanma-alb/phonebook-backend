@@ -1,6 +1,11 @@
 const express = require('express')
 const app = express()
 var morgan = require('morgan')
+
+app.use(express.static('dist'))
+
+const cors = require('cors')
+app.use(cors()) 
 app.use(express.json())
 
 morgan.token("body", (req, res) =>{
@@ -34,9 +39,6 @@ let persons=
 
 
 //GET
-app.get('/', (request, response) => {
-  response.send('<h1>Hello World!</h1>')
-})
 
 
 app.get('/api/persons', (request, response) => {
