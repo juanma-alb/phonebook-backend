@@ -77,12 +77,6 @@ app.get (`/api/persons/:id`, (req, res, next) =>{
 //POST
 app.post (`/api/persons/`, (req, res, next) =>{
 const body= req.body
-
-if (!body.name || !body.number){
-    return res.status (400).json ({
-        error: "name or number is missing"
-    })
-}
    
  const personObject ={
     name: body.name,
@@ -148,7 +142,14 @@ const errorHandler = (e, req, res, next) => {
       res.status(400)
       .send({ error: 'malformatted id' })
     )
-  } 
+  }
+  
+  if (e.name === 'ValidationError') {
+    return (
+      res.status(400)
+      .send({ error: e.message })
+    )
+  }
   next(e)
   }
 
