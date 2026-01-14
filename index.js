@@ -11,12 +11,12 @@ const Person = require('./models/person')
 const app = express()
 
 
-// db conection 
+// db conection
 const url = process.env.MONGODB_URI
 console.log('connecting to database')
 
 mongoose.connect(url)
-  .then(result => {
+  .then(() => {
     console.log('connected to MongoDB')
   })
   .catch((error) => {
@@ -29,75 +29,75 @@ app.use(express.static('dist'))
 app.use(express.json())
 app.use(cors())
 
-morgan.token("body", (req, res) => JSON.stringify(req.body))
+morgan.token('body', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 
 //GET
 app.get('/api/persons', (req, res, next) => {
   Person
-  .find({})
-  .then(persons=> { 
-     res.json(persons)
-})
-  .catch (e => {
-    console.log(e)
-    next(e)
-  })
+    .find({})
+    .then(persons => {
+      res.json(persons)
+    })
+    .catch (e => {
+      console.log(e)
+      next(e)
+    })
 })
 
 app.get('/info', (req, res) => {
   Person
-  .countDocuments({})
-  .then(count => {
-    const date = new Date()
-    res.send(`<p> Phonebook has info for ${count} people</p> <p>${date}</p>`)
-  })
+    .countDocuments({})
+    .then(count => {
+      const date = new Date()
+      res.send(`<p> Phonebook has info for ${count} people</p> <p>${date}</p>`)
+    })
 })
 
-app.get (`/api/persons/:id`, (req, res, next) =>{
+app.get ('/api/persons/:id', (req, res, next) => {
 
   Person
-  .findById (req.params.id)
-  .then (person =>{
-    if (person){ 
-     res.json(person)
-    }
-    else {
-      res.status(404).end()
-    }
-  })
-  .catch (e => {
-    console.log(e)
-    next(e)
-  })
+    .findById (req.params.id)
+    .then (person => {
+      if (person){
+        res.json(person)
+      }
+      else {
+        res.status(404).end()
+      }
+    })
+    .catch (e => {
+      console.log(e)
+      next(e)
+    })
 })
 
 
 //POST
-app.post (`/api/persons/`, (req, res, next) =>{
-const body= req.body
-   
- const personObject ={
+app.post ('/api/persons/', (req, res, next) => {
+  const body= req.body
+
+  const personObject ={
     name: body.name,
     number: body.number
- }
+  }
 
 
-const newPerson = new Person (personObject)
-newPerson
-.save ()
-.then (savedPerson => {
-    res.status(201).json (savedPerson)
-})
-.catch (e => {
-    console.log(e)
-    next(e)
-  })
+  const newPerson = new Person (personObject)
+  newPerson
+    .save ()
+    .then (savedPerson => {
+      res.status(201).json (savedPerson)
+    })
+    .catch (e => {
+      console.log(e)
+      next(e)
+    })
 })
 
 //PUT
-app.put (`/api/persons/:id`, (req,res, next) =>{
+app.put ('/api/persons/:id', (req,res, next) => {
   const body=req.body
 
   const personObject = {
@@ -106,19 +106,19 @@ app.put (`/api/persons/:id`, (req,res, next) =>{
   }
 
   Person
-  .findByIdAndUpdate(req.params.id, personObject, { new: true, runValidators: true, context: 'query' })
-  .then(updatedPerson => res.status(200).json(updatedPerson))
-  .catch(e => {
-    console.error(e)
-    next(e)
-  })
+    .findByIdAndUpdate(req.params.id, personObject, { new: true, runValidators: true, context: 'query' })
+    .then(updatedPerson => res.status(200).json(updatedPerson))
+    .catch(e => {
+      console.error(e)
+      next(e)
+    })
 })
 
 
 //DELETE
-app.delete(`/api/persons/:id`, (req, res, next) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person
-  .findByIdAndDelete(req.params.id)
+    .findByIdAndDelete(req.params.id)
     .then(() => {
       res.status(204).end()
     })
@@ -140,18 +140,18 @@ const errorHandler = (e, req, res, next) => {
   if (e.name === 'CastError') {
     return (
       res.status(400)
-      .send({ error: 'malformatted id' })
+        .send({ error: 'malformatted id' })
     )
   }
-  
+
   if (e.name === 'ValidationError') {
     return (
       res.status(400)
-      .send({ error: e.message })
+        .send({ error: e.message })
     )
   }
   next(e)
-  }
+}
 
 app.use(errorHandler)
 
